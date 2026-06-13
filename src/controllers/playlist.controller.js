@@ -78,11 +78,10 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid Playlist ID or Video ID");
     }
 
-
     const playlist = await Playlist.findByIdAndUpdate(
     playlistId,
     {
-        $push: {
+        $addToSet: {
             videos : videoId
         }
     },
@@ -90,6 +89,11 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
         new:true
     }
 )
+
+    if(!playlist){
+        throw new ApiError(404, "Playlist not found")
+    }
+
     return res
     .status(200)
     .json(
